@@ -1,0 +1,61 @@
+import requests
+from bs4 import BeautifulSoup
+from pathlib import Path
+import pandas as pd
+
+
+def clean_team_data_saver(what_to_write):
+    """Saves clean data of the teams"""
+    file_path = Path('football_data.csv')
+    with open(file_path, 'w', newline='') as file:
+        what_to_write.to_csv(file)
+
+
+def make_first_team_data(what_to_write):
+    """Creates the file with dirty data"""
+    file_path = Path('data.csv')
+    with open(file_path, 'w', newline="") as file:
+        what_to_write.to_csv(file, index=False, header=False)
+
+
+def read_dataframe(path):
+    """Reads the data frame"""
+    return pd.read_csv(path, index_col=0)
+
+
+def clear_the_data(path):
+    """Data cleaner for pandas use only the dirty path"""
+    data = read_dataframe(path)
+    data = data.drop(['Form', 'Pts'], axis=1)
+    data.index = data.index.astype(int)
+    data = data.rename(columns={'Unnamed: 1': 'Team'})
+    data['CS'] = data['CS'].str.rstrip('%').astype(float) / 100
+    data['FTS'] = data['FTS'].str.rstrip('%').astype(float) / 100
+    clean_team_data_saver(data)
+
+
+def retrive_data():
+    """Gets the data form the website to be cleand"""
+    # Replace the URL with the website you want to scrape
+    # url = 'https://www.soccerstats.com/leagueview.asp?league=cleague_2022'
+    url = 'https://www.soccerstats.com/leagueview.asp?league=cleague'
+    # Send a GET request to the URL
+    response = requests.get(url)
+    # Raises an error if cannot reach a site
+    response.raise_for_status()
+    # Parse the HTML content of the page using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+    statistic_table = soup.find('h2', string="Statistical table")
+    table_body = statistic_table.find_next_sibling('table')
+    pandas_table = pd.read_html(str(table_body))
+    make_first_team_data(pandas_table[0])
+
+
+if __name__ == '__main__':
+    """Clean data frame 
+    index, team, gp, wins, draws, loses, goals for, goals against, GD,
+    point per game, clean sheet, failed to score"""
+    file_path_dirty_data = Path('data.csv')
+    file_path_clean_data = Path('football_data.csv')
+    df = read_dataframe(file_path_clean_data)
+    print(df)
