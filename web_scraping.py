@@ -34,19 +34,27 @@ def clear_the_data(path):
     clean_team_data_saver(data)
 
 
-def retrive_data():
-    """Gets the data form the website to be cleand"""
+def retrive_data(url):
+    """Gets the data of a championship table from the website to be cleand"""
     # Replace the URL with the website you want to scrape
     # url = 'https://www.soccerstats.com/leagueview.asp?league=cleague_2022'
-    url = 'https://www.soccerstats.com/leagueview.asp?league=cleague'
     # Send a GET request to the URL
     response = requests.get(url)
     # Raises an error if cannot reach a site
     response.raise_for_status()
     # Parse the HTML content of the page using BeautifulSoup
     soup = BeautifulSoup(response.content, 'html.parser')
+    return soup
+
+
+def get_the_table_of_championship(soup):
     statistic_table = soup.find('h2', string="Statistical table")
     table_body = statistic_table.find_next_sibling('table')
+    return table_body
+
+
+def convert_html_to_pandas():
+    table_body = get_the_table_of_championship(retrive_data(url_for_championship))
     pandas_table = pd.read_html(str(table_body))
     make_first_team_data(pandas_table[0])
 
@@ -57,5 +65,13 @@ if __name__ == '__main__':
     point per game, clean sheet, failed to score"""
     file_path_dirty_data = Path('data.csv')
     file_path_clean_data = Path('football_data.csv')
-    df = read_dataframe(file_path_clean_data)
-    print(df)
+    url_for_championship = 'https://www.soccerstats.com/leagueview.asp?league=cleague'
+    # df = read_dataframe(file_path_clean_data)
+    website = get_the_table_of_championship(retrive_data(url_for_championship))
+    links = website.find_all('a')
+    all_links = [link['href'] for link in links if 'href' in link.attrs]
+    links_to_team = []
+    for link in all_links[::2]:
+        links_to_team.append('https://www.soccerstats.com/' + link)
+    print(links_to_team)
+    # print(website)
