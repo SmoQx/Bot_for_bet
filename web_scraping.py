@@ -1,5 +1,4 @@
 import csv
-
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
@@ -80,14 +79,18 @@ if __name__ == '__main__':
     # print(website)
     team_data = retrive_data(links_to_team[0])
     all_tables = team_data.find_all('table')
-    all_tables = [all_tables[x] for x in [3, 4, 7]]
+    all_tables = [all_tables[x] for x in [3, 7]]
     all_tables = pd.read_html(str(all_tables))
+    print(type(all_tables))
     for index, table in enumerate(all_tables):
-        with open(f'table_data{index}.csv', 'w') as team_data_file:
-            try:
-                table.to_csv(team_data_file, index=False, header=False)
-            except UnicodeEncodeError:
-                pass
+        print(index)
+        if index in [0, 3, 5]:
+            print(table, "\n" * 3)
+            with open(f'table_data{index}.csv', 'w') as team_data_file:
+                try:
+                    table.to_csv(team_data_file, index=False, header=False)
+                except UnicodeEncodeError:
+                    pass
     """with open('team_data.csv', 'w', newline='') as team_file:
         for table in all_tables:
             try:
