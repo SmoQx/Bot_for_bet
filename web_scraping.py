@@ -81,10 +81,15 @@ if __name__ == '__main__':
     all_tables = team_data.find_all('table')
     all_tables = [all_tables[x] for x in [3, 7]]
     all_tables = pd.read_html(str(all_tables))
-    print(type(all_tables))
+    print(type(all_tables[0]))
+    all_tables[0] = all_tables[0].drop(0, axis=1)
+    all_tables[0] = all_tables[0].drop(4, axis=1)
+    for index_of_x, x in enumerate(all_tables[0][2]):
+        all_tables[0][2][index_of_x] = x[0:5]
+    print(all_tables[0][2])
+
     for index, table in enumerate(all_tables):
-        print(index)
-        if index in [0, 3, 5]:
+        if index in [0, 3]:
             print(table, "\n" * 3)
             with open(f'table_data{index}.csv', 'w') as team_data_file:
                 try:
