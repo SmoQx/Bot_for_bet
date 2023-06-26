@@ -91,7 +91,7 @@ if __name__ == '__main__':
     for index, table in enumerate(all_tables):
         if index in [0, 3]:
             print(table, "\n" * 3)
-            with open(f'table_data{index}.csv', 'w') as team_data_file:
+            with open(f'table_data{index}.csv', 'w', newline='') as team_data_file:
                 try:
                     table.to_csv(team_data_file, index=False, header=False)
                 except UnicodeEncodeError:
