@@ -10,7 +10,7 @@ def clean_team_data_saver(what_to_write, file_path):
     """Saves clean data of the teams"""
     # file_path = Path('football_data.csv')
     with open(file_path, 'w', newline='') as file:
-        what_to_write.to_csv(file)
+        what_to_write.to_csv(file, index=0)
 
 
 def make_first_team_data(what_to_write):

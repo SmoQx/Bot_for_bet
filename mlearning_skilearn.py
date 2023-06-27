@@ -1,37 +1,66 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_score
+from data_reader import game_played, championship_scores
+import numpy as np
 
 
-def game_data():
-    path_to_data = "table_data0.csv"
-    with open(path_to_data) as data:
-        data_of_games = pd.read_csv(data)
-    return data_of_games
+def open_game_data():
+    data_frame = game_played()
+    return data_frame
 
 
-def model():
-    model_of_set = RandomForestClassifier(n_estimators=100, min_samples_split=100, random_state=1)
-    train = game_data()
-    predictors = [
-        "team1_games_played",
-        "team1_wins",
-        "team1_player_quality",
-        "team1_injured_players",
-        "team2_games_played",
-        "team2_wins",
-        "team2_player_quality",
-        "team2_injured_players"
-    ]
-    model_of_set.fit(train[predictors], train["outcome"])
-    print(model_of_set)
-    preds = model_of_set.predict(train[predictors])
-    print(preds)
-    preds = pd.Series(preds, index=train.index)
-    print(preds)
-    print(precision_score(train["outcome"], preds))
+def open_championship_data(path):
+    data_frame = championship_scores(path)
+    return data_frame
+
+
+def calculate_likelihood(team1, team2, team_stats_df, game_scores_df):
+    # Step 1: Input team names
+    team1 = team1.strip()
+    team2 = team2.strip()
+
+    # Step 2: Find corresponding rows for the teams
+    team1_stats = team_stats_df.loc[team_stats_df['Team'] == team1]
+    team2_stats = team_stats_df.loc[team_stats_df['Team'] == team2]
+
+    # Step 3: Calculate likelihood scores
+    try:
+        team1_goals_scored = game_scores_df[(game_scores_df['team1'] == team1) & (game_scores_df['team2'] == team2)]['score'].apply(lambda x: int(x.split('-')[0].strip()))
+        team1_goals_conceded = game_scores_df[(game_scores_df['team1'] == team2) & (game_scores_df['team2'] == team1)]['score'].apply(lambda x: int(x.split('-')[1].strip()))
+
+        team2_goals_scored = game_scores_df[(game_scores_df['team1'] == team2) & (game_scores_df['team2'] == team1)]['score'].apply(lambda x: int(x.split('-')[0].strip()))
+        team2_goals_conceded = game_scores_df[(game_scores_df['team1'] == team1) & (game_scores_df['team2'] == team2)]['score'].apply(lambda x: int(x.split('-')[1].strip()))
+
+        team1_likelihood = (
+            team1_stats['W'].values[0] * team1_stats['GF'].values[0] * team2_stats['L'].values[0] * team2_stats['GA'].values[0] * team1_goals_scored.mean() * team2_goals_conceded.mean() /
+            (team1_stats['W'].values[0] * team1_stats['GF'].values[0] * team2_stats['L'].values[0] * team2_stats['GA'].values[0] * team1_goals_scored.mean() * team2_goals_conceded.mean() +
+             team2_stats['W'].values[0] * team2_stats['GF'].values[0] * team1_stats['L'].values[0] * team1_stats['GA'].values[0] * team2_goals_scored.mean() * team1_goals_conceded.mean())
+        )
+        team2_likelihood = (
+            team2_stats['W'].values[0] * team2_stats['GF'].values[0] * team1_stats['L'].values[0] * team1_stats['GA'].values[0] * team2_goals_scored.mean() * team1_goals_conceded.mean() /
+            (team2_stats['W'].values[0] * team2_stats['GF'].values[0] * team1_stats['L'].values[0] * team1_stats['GA'].values[0] * team2_goals_scored.mean() * team1_goals_conceded.mean() +
+             team1_stats['W'].values[0] * team1_stats['GF'].values[0] * team2_stats['L'].values[0] * team2_stats['GA'].values[0] * team1_goals_scored.mean() * team2_goals_conceded.mean())
+        )
+
+        return team1_likelihood * 100, team2_likelihood * 100
+
+    except IndexError:
+        return np.nan, np.nan
+
 
 
 if __name__ == '__main__':
-    print(game_data())
+    path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
+    team_stats_df = open_championship_data(path_to_championship_data[0])
+    game_scores_df = open_game_data()
+
+    print(team_stats_df)
+    print(game_scores_df)
+
+    team1_name = 'Dortmund'
+    team2_name = 'Sporting CP'
+
+
+    team1_percentage, team2_percentage = calculate_likelihood(team1_name, team2_name, team_stats_df, game_scores_df)
+
+    print(f"Percentage likelihood of {team1_name} winning: {team1_percentage}%")
+    print(f"Percentage likelihood of {team2_name} winning: {team2_percentage}%")
