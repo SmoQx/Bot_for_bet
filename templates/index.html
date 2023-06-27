@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
-  <title>CSV to HTML</title>
+    <meta charset="UTF-8">
+    <title>Szacowanie Wyników Meczów</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-  <table>
-    {% for row in csv_data %}
-    <tr>
-      {% for cell in row %}
-      <td>{{ cell }}</td>
-      {% endfor %}
-    </tr>
-    {% endfor %}
-  </table>
+    <div class="container">
+        <h1>Szacowanie Wyników Meczów</h1>
+        <form action="compare_teams.php" method="post">
+            <div class="teams-input">
+                <div class="team">
+                    <label for="team1">Drużyna 1:</label>
+                    <input type="text" id="team1" name="team1" placeholder="Wpisz nazwę drużyny" required>
+                </div>
+                <div class="team">
+                    <label for="team2">Drużyna 2:</label>
+                    <input type="text" id="team2" name="team2" placeholder="Wpisz nazwę drużyny" required>
+                </div>
+            </div>
+            <input type="submit" value="Porównaj Drużyny">
+        </form>
+    </div>
 </body>
 </html>
