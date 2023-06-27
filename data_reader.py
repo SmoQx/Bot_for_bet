@@ -24,8 +24,7 @@ def csv_reader():
 def read_data_with_pandas():
     data_with_pandas = pd.read_csv('./football_data.csv')
     print(data_with_pandas.head())
-    team1_games_played = data_with_pandas.groupby('team1_games_played')['team1_wins'].mean()
-    print(team1_games_played)
+
 
 
 if __name__ == '__main__':

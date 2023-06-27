@@ -1,10 +1,11 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score
 
 
 def game_data():
-    path_to_data = "football_data.csv"
+    path_to_data = "table_data0.csv"
     with open(path_to_data) as data:
         data_of_games = pd.read_csv(data)
     return data_of_games
@@ -33,4 +34,4 @@ def model():
 
 
 if __name__ == '__main__':
-    model()
+    print(game_data())
