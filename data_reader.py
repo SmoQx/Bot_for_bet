@@ -1,31 +1,44 @@
-import csv
-from pathlib import Path
 import pandas as pd
-import numpy as np
+import subprocess
+from pathlib import Path
 
 
-def csv_reader():
-    times_won = 0
-    path = Path("./football_data.csv")
-    with open(path, "r") as data_file:
-        fieldnamesCSV = csv.DictReader(data_file).fieldnames
-        readerCSV = csv.DictReader(data_file, fieldnames=fieldnamesCSV)
-        for line in readerCSV:
-            print(line)
-            if line["outcome"] == "1":
-                times_won += 1
-        print(times_won)
-        with open(path) as csv_file:
-            csv_to_list = csv.reader(csv_file)
-            dictionarry_for_data = list(csv_to_list)
-            print(dictionarry_for_data[0][0], "\n", dictionarry_for_data[1][0])
-    
+def does_exist():
+    files_for_data = ["./table_data0.csv", "./football_data0.csv", "./football_data1.csv"]
+    for file in files_for_data:
+        file = Path(file)
+        if not Path.exists(file):
+            subprocess.run(['python', 'web_scraping.py'])
+        else:
+            print(f"Ok! {file}")
 
-def read_data_with_pandas():
-    data_with_pandas = pd.read_csv('./football_data.csv')
-    print(data_with_pandas.head())
 
+def game_played(read_write='r'):
+    path_to_data = "table_data0.csv"
+    if read_write != 'r':
+        with open(path_to_data, 'w') as data:
+            pass
+        print(f"Usunięto dane z {path_to_data} generuje nowe")
+        subprocess.run(['python', 'web_scraping.py'])
+    else:
+        with open(path_to_data, read_write) as data:
+            columns = ['team1', 'score', 'team2']
+            data_of_games = pd.read_csv(data, names=columns)
+        return data_of_games
+
+
+def championship_scores(path):
+    with open(path) as data:
+        data_of_games = pd.read_csv(data)
+    return data_of_games
 
 
 if __name__ == '__main__':
-    read_data_with_pandas()
+    does_exist()
+
+    path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
+
+    if len(game_played()) != 500:
+        game_played('w')
+    else:
+        print('not empty')
