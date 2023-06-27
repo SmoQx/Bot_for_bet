@@ -6,9 +6,9 @@ import pandas as pd
 import lxml.etree as etree
 
 
-def clean_team_data_saver(what_to_write):
+def clean_team_data_saver(what_to_write, file_path):
     """Saves clean data of the teams"""
-    file_path = Path('football_data.csv')
+    # file_path = Path('football_data.csv')
     with open(file_path, 'w', newline='') as file:
         what_to_write.to_csv(file)
 
@@ -33,7 +33,7 @@ def clear_the_data(path):
     data = data.rename(columns={'Unnamed: 1': 'Team'})
     data['CS'] = data['CS'].str.rstrip('%').astype(float) / 100
     data['FTS'] = data['FTS'].str.rstrip('%').astype(float) / 100
-    clean_team_data_saver(data)
+    return data
 
 
 def retrive_data(url):
@@ -55,10 +55,36 @@ def get_the_table_of_championship(soup):
     return table_body
 
 
-def convert_html_to_pandas():
-    table_body = get_the_table_of_championship(retrive_data(url_for_championship))
+def convert_html_to_pandas(url):
+    table_body = get_the_table_of_championship(retrive_data(url))
     pandas_table = pd.read_html(str(table_body))
     make_first_team_data(pandas_table[0])
+
+
+def data_of_teams(links):
+    all_links = [link['href'] for link in links if 'href' in link.attrs]
+    links_to_team = []
+    for link in all_links[::2]:
+        links_to_team.append('https://www.soccerstats.com/' + link)
+    # print(links_to_team)
+    # print(website)
+    for x in links_to_team:
+        team_data = retrive_data(x)
+        all_tables = team_data.find_all('table')
+        all_tables = [all_tables[x] for x in [3]]
+        all_tables = pd.read_html(str(all_tables))
+        all_tables[0] = all_tables[0].drop(0, axis=1)
+        all_tables[0] = all_tables[0].drop(4, axis=1)
+        for index_of_x, x in enumerate(all_tables[0][2]):
+            all_tables[0][2][index_of_x] = x[0:5]
+        for index, table in enumerate(all_tables):
+            if index == 0:
+                with open(f'table_data{index}.csv', 'a', newline='') as team_data_file:
+                    try:
+                        table.to_csv(team_data_file, index=False, header=False)
+                    except UnicodeEncodeError:
+                        pass
+    print("complete")
 
 
 if __name__ == '__main__':
@@ -68,38 +94,13 @@ if __name__ == '__main__':
     file_path_dirty_data = Path('data.csv')
     file_path_clean_data = Path('football_data.csv')
     url_for_championship = 'https://www.soccerstats.com/leagueview.asp?league=cleague'
+    url_for_championships = ['https://www.soccerstats.com/leagueview.asp?league=cleague',
+                             'https://www.soccerstats.com/leagueview.asp?league=cleague_2022']
     # df = read_dataframe(file_path_clean_data)
-    website = get_the_table_of_championship(retrive_data(url_for_championship))
-    links = website.find_all('a')
-    all_links = [link['href'] for link in links if 'href' in link.attrs]
-    links_to_team = []
-    for link in all_links[::2]:
-        links_to_team.append('https://www.soccerstats.com/' + link)
-    # print(links_to_team)
-    # print(website)
-    team_data = retrive_data(links_to_team[0])
-    all_tables = team_data.find_all('table')
-    all_tables = [all_tables[x] for x in [3, 7]]
-    all_tables = pd.read_html(str(all_tables))
-    all_tables[0] = all_tables[0].drop(0, axis=1)
-    all_tables[0] = all_tables[0].drop(4, axis=1)
-    for index_of_x, x in enumerate(all_tables[0][2]):
-        all_tables[0][2][index_of_x] = x[0:5]
-
-    for tab in all_tables:
-        print(tab)
-    #all_tables[1]
-    for index, table in enumerate(all_tables):
-        if index in [0, 3]:
-            with open(f'table_data{index}.csv', 'w', newline='') as team_data_file:
-                try:
-                    table.to_csv(team_data_file, index=False, header=False)
-                except UnicodeEncodeError:
-                    pass
-    """with open('team_data.csv', 'w', newline='') as team_file:
-        for table in all_tables:
-            try:
-                table.to_csv(team_file, index=False, header=False)
-            except UnicodeEncodeError:
-                pass"""
-            
+    for ind, champ_url in enumerate(url_for_championships):
+        convert_html_to_pandas(url=champ_url)
+        clean_team_data_saver(clear_the_data(file_path_dirty_data), file_path=f'football_data{ind}.csv')
+    for urls in url_for_championships:
+        website = get_the_table_of_championship(retrive_data(urls))
+        links = website.find_all('a')
+        data_of_teams(links)

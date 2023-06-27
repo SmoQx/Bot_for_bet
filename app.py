@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect
-import csv
+from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 
 @app.route("/")

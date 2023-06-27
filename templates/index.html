@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <title>Szacowanie Wyników Meczów</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    $(function() {
+        $.get("/static/teams.csv", function(data) {
+            var teams = data.split(";");
+            $("#team1, #team2").autocomplete({
+                source: teams
+            });
+        });
+    });
+    </script>
 </head>
 <body>
     <div class="container">

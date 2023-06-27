@@ -17,6 +17,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\football_data0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\football_data1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\table_data0.csv">
           <value>
             <Attribute>
@@ -31,7 +45,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\team_data.csv">
+        <entry key="\templates\teams.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
