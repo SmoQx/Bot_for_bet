@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h1>Szacowanie Wyników Meczów</h1>
-        <form action="compare_teams.php" method="post">
+        <form action="{{ url_for('redirect_page') }}" method="post">
             <div class="teams-input">
                 <div class="team">
                     <label for="team1">Drużyna 1:</label>
