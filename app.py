@@ -2,7 +2,7 @@ import pandas as pd
 from flask import Flask, render_template, url_for, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from mlearning_skilearn import calculate_likelihood
-from data_reader import does_exist
+from data_reader import does_exist, check_values
 from pathlib import Path
 import re
 
@@ -66,7 +66,6 @@ def redirect_page():
         return redirect(url_for('another_page', team1=f'{team1} {value1: .2f}%', team2=f'{team2} {value2: .2f}%'))
 
 
-
 @app.route('/wynik')
 def another_page():
     team1 = request.args.get('team1')
@@ -88,7 +87,7 @@ def import_championship_data():
     db.session.commit()
 
     # Import DataFrame to the ChampionshipData table
-    df_championship.to_sql('championship_data', con=db.engine, if_exists='append',index=False)
+    df_championship.to_sql('championship_data', con=db.engine, if_exists='append', index=False)
 
     return 'Championship data imported successfully!'
 
@@ -110,4 +109,5 @@ def import_game_data():
 
 if __name__ == '__main__':
     does_exist()
+    check_values()
     app.run(debug=True)
