@@ -52,7 +52,6 @@ def calculate_likelihood(team1, team2):
              team1_stats['W'].values[0] * team1_stats['GF'].values[0] * team2_stats['L'].values[0] *
              team2_stats['GA'].values[0] * team1_goals_scored.mean() * team2_goals_conceded.mean())
         )
-        print(team1_stats, team2_stats, team1_likelihood, team2_likelihood, team1_goals_scored, team2_goals_scored)
         return team1_likelihood * 100, team2_likelihood * 100
 
     except IndexError:
