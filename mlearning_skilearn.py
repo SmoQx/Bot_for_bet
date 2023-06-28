@@ -1,4 +1,3 @@
-import pandas as pd
 from data_reader import game_played, championship_scores
 import numpy as np
 
@@ -13,7 +12,10 @@ def open_championship_data(path):
     return data_frame
 
 
-def calculate_likelihood(team1, team2, team_stats_df, game_scores_df):
+def calculate_likelihood(team1, team2):
+    path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
+    team_stats_df = open_championship_data(path_to_championship_data[0])
+    game_scores_df = open_game_data()
     # Step 1: Input team names
     team1 = team1.strip()
     team2 = team2.strip()
@@ -50,7 +52,7 @@ def calculate_likelihood(team1, team2, team_stats_df, game_scores_df):
              team1_stats['W'].values[0] * team1_stats['GF'].values[0] * team2_stats['L'].values[0] *
              team2_stats['GA'].values[0] * team1_goals_scored.mean() * team2_goals_conceded.mean())
         )
-
+        print(team1_stats, team2_stats, team1_likelihood, team2_likelihood, team1_goals_scored, team2_goals_scored)
         return team1_likelihood * 100, team2_likelihood * 100
 
     except IndexError:
@@ -58,17 +60,4 @@ def calculate_likelihood(team1, team2, team_stats_df, game_scores_df):
 
 
 if __name__ == '__main__':
-    path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
-    team_stats_df = open_championship_data(path_to_championship_data[0])
-    game_scores_df = open_game_data()
-
-    print(team_stats_df)
-    print(game_scores_df)
-
-    team1_name = 'Dortmund'
-    team2_name = 'Sporting CP'
-
-    team1_percentage, team2_percentage = calculate_likelihood(team1_name, team2_name, team_stats_df, game_scores_df)
-
-    print(f"Percentage likelihood of {team1_name} winning: {team1_percentage}%")
-    print(f"Percentage likelihood of {team2_name} winning: {team2_percentage}%")
+    open_game_data()

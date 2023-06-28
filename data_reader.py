@@ -13,6 +13,13 @@ def does_exist():
             print(f"Ok! {file}")
 
 
+def check_values():
+    if len(game_played()) != 500:
+        game_played('w')
+    else:
+        print('not empty')
+
+
 def game_played(read_write='r'):
     path_to_data = "table_data0.csv"
     if read_write != 'r':
