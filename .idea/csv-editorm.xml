@@ -17,21 +17,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\football_data0.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\football_data1.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\table_data0.csv">
+        <entry key="\web_scraper_data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
