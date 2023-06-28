@@ -1,0 +1,7 @@
+pip install pandas
+pip install Flask
+pip install Flask-SQLAlchemy
+pip install pathlib
+pip install beautifulsoup4
+pip install lxml
+pip install requests
