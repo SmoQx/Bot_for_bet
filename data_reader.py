@@ -14,7 +14,7 @@ def does_exist():
 
 
 def check_values():
-    if len(game_played()) != 500:
+    if len(game_played()) != 501:
         game_played('w')
     else:
         print('not empty')
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
 
-    if len(game_played()) != 500:
+    """if len(game_played()) != 500:
         game_played('w')
     else:
-        print('not empty')
+        print('not empty')"""

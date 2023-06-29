@@ -1,4 +1,6 @@
 import csv
+import pathlib
+
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
@@ -61,6 +63,13 @@ def convert_html_to_pandas(url):
     make_first_team_data(pandas_table[0])
 
 
+def when_file_table_doesnt_exist():
+    table_data0_path = pathlib.Path('table_data0.csv')
+    if not table_data0_path.exists():
+        with open(table_data0_path, 'w') as open_file:
+            open_file.write('team1,score,team2\n')
+
+
 def data_of_teams(links):
     all_links = [link['href'] for link in links if 'href' in link.attrs]
     links_to_team = []
@@ -69,7 +78,10 @@ def data_of_teams(links):
     # print(links_to_team)
     # print(website)
     for x in links_to_team:
-        team_data = retrive_data(x)
+        try:
+            team_data = retrive_data(x)
+        except requests.RequestException:
+            continue
         all_tables = team_data.find_all('table')
         all_tables = [all_tables[x] for x in [3]]
         all_tables = pd.read_html(str(all_tables))
@@ -97,6 +109,7 @@ if __name__ == '__main__':
     url_for_championships = ['https://www.soccerstats.com/leagueview.asp?league=cleague',
                              'https://www.soccerstats.com/leagueview.asp?league=cleague_2022']
     # df = read_dataframe(file_path_clean_data)
+    when_file_table_doesnt_exist()
     for ind, champ_url in enumerate(url_for_championships):
         convert_html_to_pandas(url=champ_url)
         clean_team_data_saver(clear_the_data(file_path_dirty_data), file_path=f'football_data{ind}.csv')
