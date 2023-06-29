@@ -45,6 +45,7 @@ class GameData(db.Model):
 
 @app.route("/")
 def display_csv():
+
     return render_template('index.html')
 
 
@@ -58,7 +59,6 @@ def redirect_page():
 
     db.session.add(new_game_pred)
     db.session.commit()
-    print(TeamData.query.order_by(TeamData.id).all())
 
     return redirect(url_for('another_page', team1=f'{team1} {value1: .2f}%', team2=f'{team2} {value2: .2f}%'))
 
@@ -101,8 +101,22 @@ def import_game_data():
     # Import DataFrame to the GameData table
     df_game.to_sql('game_data', con=db.engine, if_exists='replace', index=False)
 
-
     return 'Game data imported successfully!'
+
+
+@app.route("/clean_db_name=<what_table>")
+def db_cleaner(what_table):
+    '''db_names = /clean_db_name=championship_data, /clean_db_name=game_data, /clean_db_name=team_data'''
+
+    if what_table == 'championship_data':
+        db.session.query(ChampionshipData).delete()
+    elif what_table == 'game_data':
+        db.session.query(GameData).delete()
+    elif what_table == 'team_data':
+        db.session.query(TeamData).delete()
+    db.session.commit()
+
+    return f'Cleaned {what_table} table'
 
 
 if __name__ == '__main__':
