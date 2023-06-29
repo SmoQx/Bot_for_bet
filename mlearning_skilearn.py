@@ -36,28 +36,21 @@ def calculate_likelihood(team1, team2):
         team2_goals_conceded = game_scores_df[(game_scores_df['team1'] == team1) &
                                               (game_scores_df['team2'] == team2)]['score'].apply(lambda x: int(x.split('-')[1].strip()))
 
-        team1_likelihood = (
-            team1_stats['W'].values[0] + team1_stats['GF'].values[0] + team2_stats['L'].values[0] +
-            team2_stats['GA'].values[0] + team1_goals_scored.mean() + team2_goals_conceded.mean() /
-            (team1_stats['W'].values[0] + team1_stats['GF'].values[0] + team2_stats['L'].values[0] +
+        denominator = (team1_stats['W'].values[0] + team1_stats['GF'].values[0] + team2_stats['L'].values[0] +
              team2_stats['GA'].values[0] + team1_goals_scored.mean() + team2_goals_conceded.mean() +
              team2_stats['W'].values[0] + team2_stats['GF'].values[0] + team1_stats['L'].values[0] +
              team1_stats['GA'].values[0] + team2_goals_scored.mean() + team1_goals_conceded.mean())
-        )
-        team2_likelihood = (
-            team2_stats['W'].values[0] + team2_stats['GF'].values[0] + team1_stats['L'].values[0] +
-            team1_stats['GA'].values[0] + team2_goals_scored.mean() + team1_goals_conceded.mean() /
-            (team2_stats['W'].values[0] + team2_stats['GF'].values[0] + team1_stats['L'].values[0] +
-             team1_stats['GA'].values[0] + team2_goals_scored.mean() + team1_goals_conceded.mean() +
-             team1_stats['W'].values[0] + team1_stats['GF'].values[0] + team2_stats['L'].values[0] +
-             team2_stats['GA'].values[0] + team1_goals_scored.mean() + team2_goals_conceded.mean())
-        )
-        print(team2_likelihood)
-        return team1_likelihood, team2_likelihood
+             
+        if denominator == 0:
+            return np.nan, np.nan
+
+        team1_likelihood = (team1_stats['W'].values[0] + team1_stats['GF'].values[0] + team2_stats['L'].values[0] +
+                            team2_stats['GA'].values[0] + team1_goals_scored.mean() + team2_goals_conceded.mean()) / denominator
+
+        # Ensure the probabilities sum up to 100%
+        team2_likelihood = 1 - team1_likelihood
+
+        return team1_likelihood * 100, team2_likelihood * 100
 
     except IndexError:
         return np.nan, np.nan
-
-
-if __name__ == '__main__':
-    open_game_data()
