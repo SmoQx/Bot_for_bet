@@ -1,5 +1,6 @@
 from data_reader import game_played, championship_scores
 import numpy as np
+import pandas as pd
 
 
 def open_game_data():
@@ -14,7 +15,9 @@ def open_championship_data(path):
 
 def calculate_likelihood(team1, team2):
     path_to_championship_data = ["football_data0.csv", "football_data1.csv"]
-    team_stats_df = open_championship_data(path_to_championship_data[0])
+    merger = pd.concat([open_championship_data(path_to_championship_data[0]),
+                        open_championship_data(path_to_championship_data[1])])
+    team_stats_df = merger
     game_scores_df = open_game_data()
     # Step 1: Input team names
     team1 = team1.strip()
