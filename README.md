@@ -1,2 +1,2 @@
 # Bot_for_bet
-![My Image](dokumentacja/Dokumentacja.pdf)
+![Download PDF](dokumentacja/Dokumentacja.pdf)
